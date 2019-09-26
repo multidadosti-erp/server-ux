@@ -19,4 +19,7 @@
         "wizard/view_mass_editing_wizard.xml",
     ],
     "demo": ["demo/mass_editing.xml"],
+    "installable": False,
+    "application": False,
+    "auto_install": False,
 }

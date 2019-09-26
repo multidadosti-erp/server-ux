@@ -9,7 +9,7 @@
     'website': 'https://github.com/OCA/server-ux',
     'author': 'Creu Blanca, Eficent, Odoo Community Association (OCA)',
     'license': 'AGPL-3',
-    'installable': True,
+    'installable': False,
     'application': False,
     'summary': 'Allows to use barcodes as a launcher',
     'depends': [
