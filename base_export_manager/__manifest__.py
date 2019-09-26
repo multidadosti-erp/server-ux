@@ -28,6 +28,6 @@
               'Odoo Community Association (OCA)',
     'website': 'https://github.com/OCA/server-ux',
     'license': 'AGPL-3',
-    'installable': True,
+    'installable': False,
     'application': False,
 }
