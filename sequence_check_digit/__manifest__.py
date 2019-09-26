@@ -10,7 +10,7 @@
     "author": "Creu Blanca, "
               "Odoo Community Association (OCA)",
     "license": "LGPL-3",
-    "installable": True,
+    "installable": False,
     "application": False,
     "summary": "Adds a check digit on sequences",
     "depends": [

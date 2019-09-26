@@ -19,5 +19,5 @@
     'data': [
         'templates/assets.xml'
     ],
-    'installable': True,
+    'installable': False,
 }
