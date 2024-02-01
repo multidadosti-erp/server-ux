@@ -16,8 +16,8 @@
     ],
     'external_dependencies': {
         'python': [
-            'pyzbar',
-            'pdf2image',
+            # 'pyzbar',
+            # 'pdf2image',
         ],
     },
     'data': [

@@ -24,4 +24,5 @@
     'maintainers': [
         'etobella',
     ],
+    'installable': False,
 }
