@@ -16,5 +16,5 @@
         "views/base_substate_value_views.xml",
         "views/base_substate_views.xml",
     ],
-    "installable": True,
+    "installable": False,
 }
