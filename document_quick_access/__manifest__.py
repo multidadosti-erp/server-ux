@@ -28,4 +28,5 @@
     'qweb': [
         'static/src/xml/document_quick_access_launcher.xml'
     ],
+    'installable': False,
 }
