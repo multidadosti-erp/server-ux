@@ -16,7 +16,6 @@ from ..exceptions import PassError
 _logger = logging.getLogger(__name__)
 try:
     import zxcvbn
-    zxcvbn.feedback._ = _
 except ImportError:
     _logger.debug(
         'Could not import zxcvbn. Please make sure this library is available in your environment.'
