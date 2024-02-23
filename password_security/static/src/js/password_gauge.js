@@ -14,21 +14,21 @@ odoo.define('password_security.policy', function (require) {
          *
          * @param {Object} info
          * @param {Number} [info.password_length=4]
-         * @param {Number} [info.password_lower=0]
-         * @param {Number} [info.password_upper=0]
-         * @param {Number} [info.password_numeric=0]
-         * @param {Number} [info.password_special=0]
-         * @param {Number} [info.password_estimate=0]
+         * @param {Number} [info.password_lower=1]
+         * @param {Number} [info.password_upper=1]
+         * @param {Number} [info.password_numeric=1]
+         * @param {Number} [info.password_special=1]
+         * @param {Number} [info.password_estimate=3]
          */
         init: function (info) {
             this._super(info);
 
-            this._password_length = parseInt(info.password_length) || 0;
-            this._password_lower = parseInt(info.password_lower) || 0;
-            this._password_upper = parseInt(info.password_upper) || 0;
-            this._password_numeric = parseInt(info.password_numeric) || 0;
-            this._password_special = parseInt(info.password_special) || 0;
-            this._password_estimate = parseInt(info.password_estimate) || 3;
+            this._password_length = info.password_length || 4;
+            this._password_lower = info.password_lower || 1;
+            this._password_upper = info.password_upper || 1;
+            this._password_numeric = info.password_numeric || 1;
+            this._password_special = info.password_special || 1;
+            this._password_estimate = info.password_estimate || 3;
         },
 
         toString: function () {
@@ -105,14 +105,22 @@ odoo.define('password_security.policy', function (require) {
         },
 
         score: function (password) {
-            var lengthscore = Math.min(password.length / this._password_length, 1.0);
-            var loverscore = this._calculate_password_score("[a-z]", this._password_lower, password) || 0;
-            var upperscore = this._calculate_password_score("[A-Z]", this._password_upper, password) || 0;
-            var numericscore = this._calculate_password_score("\\d", this._password_numeric, password) || 0;
-            var specialscore = this._calculate_password_score("[\\W_]", this._password_special, password) || 0;
-            var estimatescore = this._estimate(password) || 0;
+            var lengthscore = Math.min(
+                password.length / this._password_length, 1.0
+            );
+            var loverscore = this._calculate_password_score(
+                "[a-z]", this._password_lower, password);
+            var upperscore = this._calculate_password_score(
+                "[A-Z]", this._password_upper, password);
+            var numericscore = this._calculate_password_score(
+                "\\d", this._password_numeric, password);
+            var specialscore = this._calculate_password_score(
+                "[\\W_]", this._password_special, password);
+            var estimatescore = this._estimate(password);
 
-            return (lengthscore * loverscore * upperscore * numericscore * specialscore * estimatescore);
+            return (
+                lengthscore * loverscore * upperscore *
+                numericscore * specialscore * estimatescore);
         },
     });
 
@@ -139,4 +147,5 @@ odoo.define('password_security.policy', function (require) {
     };
 
     auth_password_policy.recommendations = recommendations;
+
 });
