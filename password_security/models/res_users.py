@@ -174,8 +174,7 @@ class ResUsers(models.Model):
     def _password_has_expired(self):
         self.ensure_one()
         get_param = self.env['ir.config_parameter'].sudo().get_param
-
-        password_expiration = get_param('password_security.password_expiration', 0)
+        password_expiration = get_param('password_security.password_expiration', '0')
 
         if not self.password_write_date:
             return True
@@ -183,9 +182,13 @@ class ResUsers(models.Model):
         if not password_expiration:
             return False
 
-        days = (fields.Datetime.now() - self.password_write_date).days
+        try:
+            days = (fields.Datetime.now() - self.password_write_date).days
+            result = days > int(password_expiration)
+        except:
+            result = False
 
-        return days > password_expiration
+        return result
 
     @api.multi
     def action_expire_password(self):
