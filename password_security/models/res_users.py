@@ -235,10 +235,12 @@ class ResUsers(models.Model):
             else:
                 recent_passes = rec_id.password_history_ids[0: recent_passes - 1]
 
-            if recent_passes.filtered(lambda r: crypt.verify(password, r.password_crypt)):
+            if recent_passes.filtered(
+                lambda r: crypt.verify(password, r.password_crypt)
+            ):
                 raise PassError(
-                    _('Cannot use the most recent %d passwords') %
-                    get_param('password_security.password_history', 0)
+                    _("Cannot use the most recent %d passwords")
+                    % get_param("password_security.password_history", "0")
                 )
 
     def _set_encrypted_password(self, uid, pw):
