@@ -223,25 +223,34 @@ class ResUsers(models.Model):
 
     @api.multi
     def _check_password_history(self, password):
-        """ It validates proposed password against existing history
-        :raises: PassError on reused password
+        """
+        Valida a senha proposta contra o histórico de senhas do usuário.
+        Levanta PassError se a senha já foi utilizada recentemente.
+
+        Melhorias de performance:
+        - Busca apenas os registros necessários do histórico.
+        - Utiliza mapeamento direto ao invés de filtered para evitar lambda lento.
         """
         crypt = self._crypt_context()
         get_param = self.env['ir.config_parameter'].sudo().get_param
         password_history = int(get_param('password_security.password_history', '0'))
-        for rec_id in self:
-            if password_history < 0:
-                recent_passes = rec_id.password_history_ids
-            else:
-                recent_passes = rec_id.password_history_ids[0: recent_passes - 1]
 
-            if recent_passes.filtered(
-                lambda r: crypt.verify(password, r.password_crypt)
-            ):
-                raise PassError(
-                    _("Cannot use the most recent %d passwords")
-                    % get_param("password_security.password_history", "0")
-                )
+        # password_history: número negativo para infinito, 0 para desabilitar
+        if password_history != 0:
+            for rec_id in self:
+                # Seleciona apenas os registros necessários do histórico
+                if password_history < 0:
+                    recent_passes = rec_id.password_history_ids
+                else:
+                    recent_passes = rec_id.password_history_ids[:password_history - 1]
+
+                # Verifica se alguma senha do histórico corresponde à senha proposta
+                for pass_hist in recent_passes:
+                    if crypt.verify(password, pass_hist.password_crypt):
+                        raise PassError(
+                            _("Cannot use the most recent %d passwords")
+                            % get_param("password_security.password_history", "0")
+                        )
 
     def _set_encrypted_password(self, uid, pw):
         """ It saves password crypt history for history rules """
