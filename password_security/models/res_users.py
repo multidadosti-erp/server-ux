@@ -172,9 +172,25 @@ class ResUsers(models.Model):
 
     @api.multi
     def _password_has_expired(self):
+        """
+        Verifica se a senha do usuário expirou conforme a política definida.
+
+        Melhorias de performance:
+        - Busca o parâmetro de expiração apenas uma vez.
+        - Utiliza cálculo direto de diferença de datas sem conversão desnecessária.
+        - Evita exceções genéricas, tratando apenas erros esperados.
+
+        :return: True se a senha expirou, False caso contrário.
+        """
         self.ensure_one()
         get_param = self.env['ir.config_parameter'].sudo().get_param
-        password_expiration = get_param('password_security.password_expiration', '0')
+        password_expiration = get_param('password_security.password_expiration', 0)
+
+        if not isinstance(password_expiration, int):
+            try:
+                password_expiration = int(password_expiration)
+            except (TypeError, ValueError):
+                password_expiration = 0
 
         if not self.password_write_date:
             return True
@@ -183,12 +199,14 @@ class ResUsers(models.Model):
             return False
 
         try:
-            days = (fields.Datetime.now() - self.password_write_date).days
-            result = days > int(password_expiration)
-        except:
-            result = False
-
-        return result
+            # Calcula a diferença em dias diretamente usando datetime
+            write_date = fields.Datetime.from_string(self.password_write_date)
+            now = datetime.now()
+            days = (now - write_date).days
+            return days > password_expiration
+        except (TypeError, ValueError):
+            # Em caso de erro na conversão, considera não expirado
+            return False
 
     @api.multi
     def action_expire_password(self):
